@@ -1,4 +1,4 @@
-fetch("../json/suplementos.json")
+fetch("suplementos.json")
 .then(response => response.json())
 .then(data => {
     console.log(data);
@@ -23,7 +23,7 @@ let suplementos = [];
 
 async function cargarSuplementos() {
     try {
-        const response = await fetch("../json/suplementos.json"); 
+        const response = await fetch("suplementos.json"); 
         suplementos = await response.json();
         console.log("Suplementos cargados correctamente.");
         renderSuplementos();
