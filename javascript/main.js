@@ -23,8 +23,7 @@ let suplementos = [];
 
 async function cargarSuplementos() {
     try {
-        const response = await fetch("https://matiasmaranzana.github.io/ALMA-FIT-SUPLEMENTOS/json/suplementos.json");
-        if (!response.ok) throw new Error("No se pudo cargar el archivo JSON.");
+        const response = await fetch("../json/suplementos.json"); 
         suplementos = await response.json();
         console.log("Suplementos cargados correctamente.");
         renderSuplementos();
@@ -32,8 +31,6 @@ async function cargarSuplementos() {
         console.error('Error al obtener el archivo JSON:', error);
     }
 }
-
-cargarSuplementos();
 
 function renderSuplementos() {
     let contenidoHtml = "";
