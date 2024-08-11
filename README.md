@@ -1,2 +1,0 @@
-# alma-fit
-# ALMA-FIT-SUPLEMENTOS
