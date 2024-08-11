@@ -1,29 +1,11 @@
-fetch("json/suplementos.json")
-.then(response => response.json())
-.then(data => {
-    console.log(data);
-    let contenidoHtml = "";
-
-    data.forEach(suplemento => {
-        contenidoHtml += `<div class= "col-md-4">
-        <div class="card border-0">
-        <img src="${suplemento.imagen}" class="card-img-top" alt="${suplemento.nombre}">
-            <div class="card-body text-center">
-                <p class="card-text">${suplemento.nombre} <br> ${suplemento.marca} <br>Sabor: ${suplemento.sabor} <br> $ ${suplemento.precio} </p>
-                <p class="card-text"><button class="btn btn-primary" onclick= "agregarProducto(${suplemento.codigo})">Agregar (+)</button></p>
-            </div>
-        </div>
-    </div>`;
-        
-    });
-    document.getElementById("contenido").innerHTML = contenidoHtml;
-});
-
 let suplementos = [];
 
 async function cargarSuplementos() {
     try {
         const response = await fetch("json/suplementos.json");
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         suplementos = await response.json();
         console.log("Suplementos cargados correctamente.");
         renderSuplementos();
@@ -42,7 +24,9 @@ function renderSuplementos() {
                 <img src="${suplemento.imagen}" class="card-img-top" alt="${suplemento.nombre}">
                 <div class="card-body text-center">
                     <p class="card-text">${suplemento.nombre} <br> ${suplemento.marca} <br>Sabor: ${suplemento.sabor} <br> $ ${suplemento.precio} </p>
-                    <p class="card-text"><button class="btn btn-primary" onclick="agregarProducto(${suplemento.codigo})">Agregar (+)</button></p>
+                    <p class="card-text">
+                        <button class="btn btn-primary" onclick="agregarProducto(${suplemento.codigo})">Agregar (+)</button>
+                    </p>
                 </div>
             </div>
         </div>`;
@@ -56,17 +40,14 @@ function agregarProducto(codigo, cantidad = 1) {
         console.error("Los suplementos aún no han sido cargados.");
         return;
     }
-    
-    const suplemento = suplementos.find(item => item.codigo === codigo);
-    
 
+    const suplemento = suplementos.find(item => item.codigo === codigo);
     if (!suplemento) {
         console.error("El producto con el código dado no existe.");
         return;
     }
 
     let carrito = cargarCarritoLS();
-    
     const productoEnCarrito = carrito.find(item => item.codigo === codigo);
     if (productoEnCarrito) {
         productoEnCarrito.cantidad += cantidad;
@@ -79,14 +60,11 @@ function agregarProducto(codigo, cantidad = 1) {
 
     guardarCarritoLS(carrito);
     renderBotonCarrito();
-    
-
     Swal.fire({
         title: "Producto agregado",
         text: "El producto se agregó correctamente",
         icon: "success"
     });
-    
     renderCarrito();
 
     console.log(`Se agregaron ${cantidad} unidades del producto al carrito.`);
@@ -109,13 +87,25 @@ function eliminarProducto(codigo, cantidad = 1) {
 
     Swal.fire({
         title: "Producto eliminado",
-        text: "El producto se elimino correctamente",
+        text: "El producto se eliminó correctamente",
         icon: "error"
     });
 
     renderBotonCarrito();
-
     console.log("El producto se eliminó correctamente o se redujo la cantidad.");
+}
+
+function vaciarCarrito() {
+    localStorage.removeItem("carrito");
+    renderCarrito();
+
+    Swal.fire({
+        title: "Carrito vacío",
+        text: "Vaciaste tu carrito!!",
+        icon: "error"
+    });
+
+    renderBotonCarrito();
 }
 
 function renderBotonCarrito() {
@@ -135,19 +125,6 @@ function cargarCarritoLS() {
 
 function guardarCarritoLS(carrito) {
     localStorage.setItem('carrito', JSON.stringify(carrito));
-}
-
-function vaciarCarrito() {
-    localStorage.removeItem("carrito");
-    renderCarrito();
-
-    Swal.fire({
-        title: "Carrito vacío",
-        text: "Vaciaste tu carrito!!",
-        icon: "error"
-    });
-
-    renderBotonCarrito();
 }
 
 cargarSuplementos();
